@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { ServiceInterface } from 'src/interfaces/service.interface';
 import {Post, Prisma} from '@prisma/client';
 import { PostModel } from './post.model';
@@ -7,11 +7,22 @@ import { UserService } from '../user/user.service';
 @Injectable()
 export class PostService implements ServiceInterface<Post>{
     constructor(private PrismaService: PrismaService,
-        private UserService: UserService) {}
+       @Inject(forwardRef(() => UserService)) private UserService: UserService) {}
 
     async findAll(): Promise<Post[]> {
         throw new Error('Method not implemented.');
     }
+
+
+    async findAllByIdUser(id_user: number): Promise<Post[]> {
+        return this.PrismaService.post.findMany({
+            where: {
+                id_user
+            }
+        })
+    }
+
+
     async findOne(where: Prisma.PostWhereInput): Promise<Post | null> {
         throw new Error('Method not implemented.');
     }

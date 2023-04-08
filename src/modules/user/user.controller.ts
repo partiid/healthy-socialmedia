@@ -1,13 +1,15 @@
-import { Controller,  Body, HttpStatus,  Post, HttpCode, BadRequestException } from '@nestjs/common';
+import { Controller,  Param, Body, HttpStatus,  Post, HttpCode, BadRequestException, Inject, forwardRef, Get } from '@nestjs/common';
 import { UserService } from './user.service';
-
+import { PostObject } from '../post/post.alias';
 import { User } from '@prisma/client';
 import { UserModel } from './user.model';
 import { ApiTags } from '@nestjs/swagger';
+import { PostService } from '../post/post.service';
 @Controller('user')
 @ApiTags("user")
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService,
+    @Inject(forwardRef(() => PostService)) private PostService: PostService) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
@@ -24,7 +26,11 @@ export class UserController {
     }
     return response; 
     
-    
+  }
+
+  @Get('/:id_user/posts')
+  async getUserPosts(@Param('id_user') id_user: number): Promise<PostObject[]> {
+    return this.PostService.findAllByIdUser(id_user);
   }
 
 }
