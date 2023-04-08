@@ -22,13 +22,6 @@ export class AppController {
     @Post('/auth/login')
     async login(@Body() dto: LoginModel, @Request() req) {
         return this.authService.login(req.user);
-        // if (req.referer === process.env.SWAGGER_REFFERER) {
-        //     return req.sessionID;
-        // } else {
-
-        //     return req.user;
-        // }
-
     }
 
     @UseGuards(JwtAuthGuard)

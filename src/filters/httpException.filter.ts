@@ -11,6 +11,9 @@ export class HttpExceptionFilter implements ExceptionFilter {
         const status = exception.getStatus();
 
 
+        let prismaException = this.isPrismaException(exception);
+        
+        
         return response
             .status(status)
             .json({
@@ -18,7 +21,8 @@ export class HttpExceptionFilter implements ExceptionFilter {
                 data: [],
                 errors: [
                     {
-                        message: typeof exception.getResponse() == 'object' ? exception.getResponse()['message'] : exception.message,
+                        message: 
+                        typeof exception.getResponse() == 'object' ? prismaException === true ? this.formatPrismaException(exception) : exception.getResponse()['message'] : exception.message,
                         path: request.url,
                         method: request.method,
                         timestamp: new Date().toISOString(),
@@ -30,4 +34,13 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
             });
     }
+
+    formatPrismaException(exception: any) {
+        return exception.getResponse()['meta']['target'] + ' must be unique!'; 
+    }
+    
+    isPrismaException(exception: any) {
+        return 'cause' in exception; 
+    }
+
 }
