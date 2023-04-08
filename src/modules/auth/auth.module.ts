@@ -7,6 +7,7 @@ import { SessionSerializer } from './session.serializer';
 import { JwtModule } from '@nestjs/jwt/dist';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { UserModule } from '../user/user.module';
+import { CryptoService } from 'src/shared/services/crypto.service';
 @Module({
   imports: [ PassportModule.register({ session: true }), JwtModule.register({
     secret: "jwt",
@@ -14,7 +15,7 @@ import { UserModule } from '../user/user.module';
   }),
   UserModule
 ],
-  providers: [AuthService, LocalStrategy, SessionSerializer, JwtStrategy],
+  providers: [AuthService, LocalStrategy, SessionSerializer, JwtStrategy, CryptoService],
   exports: [AuthService]
 })
 export class AuthModule { }
