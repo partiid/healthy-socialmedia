@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNumber, IsAlphanumeric, IsInt, IsString, IsOptional } from "class-validator";
+import { IsNumber, Matches, IsInt, IsString, IsOptional, IsNotEmpty } from "class-validator";
 
 export class PostModel {
 
@@ -8,13 +8,26 @@ export class PostModel {
     id_user: number;
 
     @ApiProperty()
-    @IsAlphanumeric()
+    @Matches(/^[a-zA-Z0-9 -]*$/)
+    @IsNotEmpty()
     content: string
+
+
+    @ApiProperty()
+    @Matches(/^[a-zA-Z0-9 -]*$/)
+    @IsOptional()
+    title?: string
+
+
+    @ApiProperty()
+    @IsInt()
+    @IsOptional()
+    id_image?: number
 
     @ApiProperty()
     @IsNumber({}, {each: true})
     @IsOptional()
-    PostTag?: Array<number>
+    tags?: Array<number>
 
     
 

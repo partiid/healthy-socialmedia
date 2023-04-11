@@ -28,6 +28,7 @@
     "@nestjs/platform-express": "^9.0.0",
     "@nestjs/swagger": "^6.1.2",
     "@prisma/client": "^4.4.0",
+    "@types/lodash": "^4.14.192",
     "bcrypt": "^5.1.0",
     "cache-manager": "^5.1.4",
     "cache-manager-redis-store": "^3.0.1",

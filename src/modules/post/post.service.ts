@@ -4,10 +4,12 @@ import {Post, Prisma} from '@prisma/client';
 import { PostModel } from './post.model';
 import { PrismaService } from 'src/prisma.service';
 import { UserService } from '../user/user.service';
+import { PostTagService } from 'src/modules/post-tag/postTag.service';
 @Injectable()
 export class PostService implements ServiceInterface<Post>{
     constructor(private PrismaService: PrismaService,
-       @Inject(forwardRef(() => UserService)) private UserService: UserService) {}
+       @Inject(forwardRef(() => UserService)) private UserService: UserService,
+       private PostTagService: PostTagService) {}
 
     async findAll(): Promise<Post[]> {
         throw new Error('Method not implemented.');
@@ -26,17 +28,21 @@ export class PostService implements ServiceInterface<Post>{
     async findOne(where: Prisma.PostWhereInput): Promise<Post | null> {
         throw new Error('Method not implemented.');
     }
+
     async create(data: PostModel): Promise<Post> {
 
         //todo: upload image to post 
-        const {content, id_user} = data;
+        const {content, id_user, tags} = data;
 
         const userExists = await this.UserService.findOne({
             id_user
         });
         if(!userExists) throw new Error('User not found!'); 
 
-        return this.PrismaService.post.create({
+        let postCreated: Post = null; 
+
+
+        postCreated = await this.PrismaService.post.create({
             data: {
                 content: content,
                 user: {
@@ -47,6 +53,16 @@ export class PostService implements ServiceInterface<Post>{
 
             } 
         })
+
+        if(!postCreated) throw new Error('Error on create post');
+
+        //connect post tags 
+        
+        await this.PostTagService.create(tags, postCreated); 
+
+        return postCreated; 
+
+
     }
     async update(params: {
         where: Prisma.PostWhereUniqueInput;

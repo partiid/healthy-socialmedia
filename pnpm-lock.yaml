@@ -22,6 +22,9 @@ dependencies:
   '@prisma/client':
     specifier: ^4.4.0
     version: 4.4.0
+  '@types/lodash':
+    specifier: ^4.14.192
+    version: 4.14.192
   bcrypt:
     specifier: ^5.1.0
     version: 5.1.0
@@ -54,7 +57,7 @@ dependencies:
     version: 4.17.21
   lodash.combinations:
     specifier: ^18.11.1
-    version: 18.11.1(lodash@4.17.21)
+    version: 18.11.1(@types/lodash@4.14.192)(lodash@4.17.21)
   moment:
     specifier: ^2.29.4
     version: 2.29.4
@@ -1350,6 +1353,10 @@ packages:
     dependencies:
       '@types/node': 16.0.0
     dev: true
+
+  /@types/lodash@4.14.192:
+    resolution: {integrity: sha512-km+Vyn3BYm5ytMO13k9KTp27O75rbQ0NFw+U//g+PX7VZyjCioXaRFisqSIJRECljcTv73G3i6BpglNGHgUQ5A==}
+    dev: false
 
   /@types/mime@3.0.1:
     resolution: {integrity: sha512-Y4XFY5VJAuw0FgAqPNd6NNoV44jbq9Bz2L7Rh/J6jLTiHBSBJa9fxqQIvkIld4GsoDOcCbvzOUAbLPsSKKg+uA==}
@@ -3943,7 +3950,7 @@ packages:
   /lodash.clonedeep@4.5.0:
     resolution: {integrity: sha512-H5ZhCF25riFd9uB5UCkVKo61m3S/xZk1x4wA6yp/L3RFP6Z/eHH1ymQcGLo7J3GMPfm0V/7m1tryHuGVxpqEBQ==}
 
-  /lodash.combinations@18.11.1(lodash@4.17.21):
+  /lodash.combinations@18.11.1(@types/lodash@4.14.192)(lodash@4.17.21):
     resolution: {integrity: sha512-0jtulyUQA1My13JuMR23MHqsMk8pQswcy+fO0jTKRp41bi+dDWflv/Ct4qRW6CcbLkk2Qi3PZyzx+tqgqSYLug==}
     peerDependencies:
       '@types/lodash': ^4
@@ -3952,6 +3959,7 @@ packages:
       '@types/lodash':
         optional: true
     dependencies:
+      '@types/lodash': 4.14.192
       lodash: 4.17.21
     dev: false
 

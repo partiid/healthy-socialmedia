@@ -12,8 +12,8 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
 
         let prismaException = this.isPrismaException(exception);
-        
-        
+        //console.log(exception, "response: ", exception.getResponse());
+        //console.log(prismaException, exception.getResponse());
         return response
             .status(status)
             .json({
@@ -40,7 +40,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     }
     
     isPrismaException(exception: any) {
-        return 'cause' in exception; 
+        return 'cause' in exception && 'code' in exception.getResponse() && exception.getResponse()['code'].match(/P[0-9]?/) != null;  
     }
 
 }

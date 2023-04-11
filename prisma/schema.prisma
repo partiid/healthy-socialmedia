@@ -19,11 +19,11 @@ model User {
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt()
   posts    Post[]
-  tags     Tag[]
-  likes    PostLike[]
-  comments CommentLike[]
+  postsLike    PostLike[]
+  userTags  UserTag[]
+  comments Comment[]
+  commentsLike CommentLike[]
   details  UserDetails?
-  UserTag  UserTag[]
 }
 
 model UserDetails {
@@ -33,13 +33,15 @@ model UserDetails {
   user            User    @relation(fields: [id_user], references: [id_user])
   id_image        Int?    @unique
   image           Image?  @relation(fields: [id_image], references: [id_image])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
 }
 
 model UserTag {
   id_user Int
   id_tag  Int
-  user    User @relation(fields: [id_user], references: [id_user])
-  tag     Tag  @relation(fields: [id_tag], references: [id_tag])
+  user    User @relation( fields: [id_user], references: [id_user])
+  tag     Tag  @relation( fields: [id_tag], references: [id_tag])
 
   @@id([id_user, id_tag])
 }
@@ -49,11 +51,13 @@ model Image {
   path     String
   posts    Post[]
   users    UserDetails[]
+  createdAt DateTime     @default(now())
 }
 
 model Post {
   id_post  Int        @id @default(autoincrement())
   content  String
+  title    String?
   id_user  Int
   user     User       @relation(fields: [id_user], references: [id_user])
   id_image Int?
@@ -61,6 +65,8 @@ model Post {
   comments Comment[]
   likes    PostLike[]
   PostTag  PostTag[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
 
   @@index([id_user], name: "post_author_idx")
 }
@@ -71,7 +77,7 @@ model PostLike {
   id_user      Int
   user         User @relation(fields: [id_user], references: [id_user])
   post         Post @relation(fields: [id_post], references: [id_post])
-
+  createdAt DateTime @default(now())
   @@index([id_post, id_user], name: "post_like_unique_idx")
 }
 
@@ -81,16 +87,21 @@ model CommentLike {
   id_comment      Int
   user            User    @relation(fields: [id_user], references: [id_user])
   comment         Comment @relation(fields: [id_comment], references: [id_comment])
-
+  createdAt DateTime @default(now())
   @@index([id_comment, id_user], name: "comment_like_unique_idx")
 }
 
 model Comment {
   id_comment Int           @id @default(autoincrement())
   id_post    Int
+  id_user    Int
   post       Post          @relation(fields: [id_post], references: [id_post])
   content    String
+  user       User          @relation(fields: [id_user], references: [id_user])
   likes      CommentLike[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+  @@index([id_post, id_user], name: "comment_post_author_idx" )
 }
 
 model PostTag {
@@ -105,8 +116,9 @@ model PostTag {
 model Tag {
   id_tag      Int       @id @default(autoincrement())
   name        String
-  users       UserTag[]
   posts       PostTag[]
-  User        User?     @relation(fields: [userId_user], references: [id_user])
-  userId_user Int?
+  users      UserTag[]
+  
+  
 }
+
