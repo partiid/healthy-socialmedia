@@ -10,7 +10,8 @@ import Redis from 'ioredis';
 
 
 async function bootstrap() {
-    const app = await NestFactory.create(AppModule, { cors: false });
+    const app = await NestFactory.create(AppModule, { cors: false,
+    snapshot: true });
 
 
     //setup redis session store

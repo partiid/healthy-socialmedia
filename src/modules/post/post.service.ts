@@ -17,16 +17,28 @@ export class PostService implements ServiceInterface<Post>{
 
 
     async findAllByIdUser(id_user: number): Promise<Post[]> {
-        return this.PrismaService.post.findMany({
-            where: {
-                id_user
-            }
+        return await this.PrismaService.post.findMany({
+                where: {
+                    id_user
+                }
+                
+            
         })
     }
 
 
     async findOne(where: Prisma.PostWhereInput): Promise<Post | null> {
-        throw new Error('Method not implemented.');
+        return await this.PrismaService.post.findFirst({
+            where: {
+                id_post: where.id_post
+
+            },
+            include: {
+                comments: true,
+                likes: true,
+                image: true,
+            }
+        }); 
     }
 
     async create(data: PostModel): Promise<Post> {

@@ -1,10 +1,11 @@
-import { Controller,  Param, Body, HttpStatus,  Post, HttpCode, BadRequestException, Inject, forwardRef, Get } from '@nestjs/common';
+import { Controller, Query,  Param, Body, HttpStatus,  Post, HttpCode, BadRequestException, Inject, forwardRef, Get } from '@nestjs/common';
 import { UserService } from './user.service';
 import { PostObject } from '../post/post.alias';
 import { User } from '@prisma/client';
 import { UserModel } from './user.model';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { PostService } from '../post/post.service';
+import { ParseIntPipe } from '@nestjs/common';
 @Controller('user')
 @ApiTags("user")
 export class UserController {
@@ -29,8 +30,21 @@ export class UserController {
   }
 
   @Get('/:id_user/posts')
-  async getUserPosts(@Param('id_user') id_user: number): Promise<PostObject[]> {
+  async getUserPosts(@Param('id_user', ParseIntPipe) id_user: number): Promise<PostObject[]> {
     return this.PostService.findAllByIdUser(id_user);
+  }
+
+  @Get('/:id_user/details')
+  @ApiQuery({
+    name: 'display',
+    required: false,
+    description: 'Display User details or user object'
+  })
+  async getUserDetails(@Param('id_user', ParseIntPipe) id_user: number, @Query("display") display: string): Promise<User> {
+    console.log(display);
+    return this.userService.findOne({
+      id_user
+    });
   }
 
 }

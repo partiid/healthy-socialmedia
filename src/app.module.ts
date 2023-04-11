@@ -1,5 +1,6 @@
 import { Module, NestModule, MiddlewareConsumer, CacheModule, CacheInterceptor } from '@nestjs/common';
 import { AppController } from './app.controller';
+import { DevtoolsModule } from '@nestjs/devtools-integration';
 import { AppService } from './app.service';
 import type { ClientOpts } from 'redis';
 import { UserModule } from './modules/user/user.module';
@@ -17,6 +18,9 @@ import { TagModule } from './modules/tag/tag.module';
             host: 'localhost',
             port: 6379,
             ttl: 3600
+        }),
+        DevtoolsModule.register({
+            http: true
         })
     ],
     controllers: [AppController],

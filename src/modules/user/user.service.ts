@@ -15,15 +15,20 @@ export class UserService implements ServiceInterface<User> {
     
     async findOne(where: Prisma.UserWhereInput): Promise<User | null> {
         return this.prismaService.user.findFirst({
-            where
+            where: {
+                id_user: where.id_user
+            },
+            
+            
         }); 
-
+ 
     }
+
+
     
     async create(data: Prisma.UserCreateInput): Promise<User> {
         const {password} = data; 
         data.password = await this.cryptoService.hash(password);
-        
 
         return  this.prismaService.user.create({
             data,
