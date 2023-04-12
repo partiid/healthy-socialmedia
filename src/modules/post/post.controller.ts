@@ -1,16 +1,20 @@
-import { Controller, UseGuards, Body, HttpStatus, Post, HttpCode, NotFoundException } from '@nestjs/common';
+import { Controller, Get, Param, UseGuards, Body, HttpStatus, Post, HttpCode, NotFoundException, ParseIntPipe } from '@nestjs/common';
 import { PostService } from './post.service';
 import { PostModel } from './post.model';
 import {PostObject} from './post.alias';
-import { ApiTags, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth, ApiOperation, ApiOkResponse} from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwtAuth.guard';
+import { PostLikeService } from './postLike/postLIke.service';
+import { PostLikeModel } from './postLike/postLike.model';
+import { PostLike } from '@prisma/client';
+import { PostLikeResponse, PostLikeStatus } from './postLike/types/postLike.types';
 
 @Controller('post')
 @ApiTags("post")
-@UseGuards(JwtAuthGuard)
-@ApiBearerAuth()
+//@UseGuards(JwtAuthGuard)
+//@ApiBearerAuth()
 export class PostController {
-  constructor(private readonly postService: PostService) {}
+  constructor(private readonly postService: PostService, private readonly PostLikeService: PostLikeService) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
@@ -26,8 +30,48 @@ export class PostController {
   return response; 
   }
 
-  //TODO ADD POST EDITION 
+  
+  @Get(":id_post")
+  async getPost(@Param('id_post', ParseIntPipe) id_post: number): Promise<PostObject> {
+    return await this.postService.findOne({
+      id_post
+    })
 
+  }
 
+  @Post('/like')
+  @HttpCode(HttpStatus.CREATED)
+  
+  @ApiOkResponse({description: "if post is already liked, the API will unlike the post and delete the record. Returns the status of the post like and the post like object. ", type: PostLikeResponse})
+  async likePost(@Body() postLike: PostLikeModel): Promise<PostLikeResponse> {
+    let response: PostLikeResponse = {
+      status: PostLikeStatus.LIKE,
+      postLike: null
+    };
+    let postLikeCreated: PostLike; 
+    
+    try {
+      postLikeCreated = await this.PostLikeService.create({
+        ...postLike
+        
+      });
+
+      
+    }
+    catch(err: any) {
+      throw new NotFoundException(err);
+    }
+    
+    response.status = PostLikeStatus.LIKE; 
+
+    //if user wants to like the same post, we want to remove like from the post based on the body - response would be the same
+      
+    
+      response.postLike = postLikeCreated;
+      return response;
+    
+    
+
+  }
 
 }

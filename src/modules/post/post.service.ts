@@ -36,6 +36,15 @@ export class PostService implements ServiceInterface<Post>{
             include: {
                 comments: true,
                 likes: true,
+                PostTag: {
+                    select:{
+                        
+                        id_tag: false,
+                        id_post: false,
+                        tag: true,
+                    },
+                    
+                },
                 image: true,
             }
         }); 
@@ -63,7 +72,8 @@ export class PostService implements ServiceInterface<Post>{
                     }
                 },
 
-            } 
+            }, 
+            
         })
 
         if(!postCreated) throw new Error('Error on create post');
@@ -72,7 +82,9 @@ export class PostService implements ServiceInterface<Post>{
         
         await this.PostTagService.create(tags, postCreated); 
 
-        return postCreated; 
+        return this.findOne({
+            id_post: postCreated.id_post
+        }); 
 
 
     }
