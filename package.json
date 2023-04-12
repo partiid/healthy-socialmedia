@@ -21,8 +21,8 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
-    "@nestjs/common": "^9.0.0",
-    "@nestjs/core": "^9.0.0",
+    "@nestjs/common": "^9.4.0",
+    "@nestjs/core": "^9.4.0",
     "@nestjs/devtools-integration": "^0.1.4",
     "@nestjs/jwt": "^10.0.1",
     "@nestjs/passport": "^9.0.0",
@@ -52,7 +52,8 @@
     "reflect-metadata": "^0.1.13",
     "regex-to-strings": "^2.1.0",
     "rimraf": "^3.0.2",
-    "rxjs": "^7.1.0"
+    "rxjs": "^7.1.0",
+    "webpack": "^5.0.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.0.0",

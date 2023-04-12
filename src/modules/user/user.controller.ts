@@ -6,6 +6,7 @@ import { UserModel } from './user.model';
 import { ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { PostService } from '../post/post.service';
 import { ParseIntPipe } from '@nestjs/common';
+import { UserDetailsService } from './userDetails.service';
 @Controller('user')
 @ApiTags("user")
 export class UserController {
@@ -35,13 +36,7 @@ export class UserController {
   }
 
   @Get('/:id_user/details')
-  @ApiQuery({
-    name: 'display',
-    required: false,
-    description: 'Display User details or user object'
-  })
-  async getUserDetails(@Param('id_user', ParseIntPipe) id_user: number, @Query("display") display: string): Promise<User> {
-    console.log(display);
+  async getUserDetails(@Param('id_user', ParseIntPipe) id_user: number): Promise<User> {
     return this.userService.findOne({
       id_user
     });

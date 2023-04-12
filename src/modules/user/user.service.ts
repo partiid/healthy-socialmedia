@@ -3,11 +3,14 @@ import { ServiceInterface } from 'src/interfaces/service.interface';
 import { PrismaService } from 'src/prisma.service';
 import {User, Prisma, PrismaClient} from '@prisma/client';
 import { CryptoService } from 'src/shared/services/crypto.service';
+import { PrismaTools } from 'src/tools/prisma/prisma.tools';
+
 
 @Injectable()
 export class UserService implements ServiceInterface<User> {
 
-    constructor(private prismaService: PrismaService, private cryptoService: CryptoService) { }
+    constructor(private prismaService: PrismaService, private CryptoService: CryptoService,
+        ) { }
     
     async findAll(): Promise<User[]> {
         return this.prismaService.user.findMany();
@@ -18,7 +21,13 @@ export class UserService implements ServiceInterface<User> {
             where: {
                 id_user: where.id_user
             },
-            
+            include: {
+                details: true,
+                posts: true,
+                comments: true,
+                userTags: true
+
+            }
             
         }); 
  
@@ -28,11 +37,16 @@ export class UserService implements ServiceInterface<User> {
     
     async create(data: Prisma.UserCreateInput): Promise<User> {
         const {password} = data; 
-        data.password = await this.cryptoService.hash(password);
+        data.password = await this.CryptoService.hash(password);
 
-        return  this.prismaService.user.create({
+        let user: Promise<User> = this.prismaService.user.create({
             data,
         });
+        if(await user) {
+            return PrismaTools.excludeFields(await user, ['password']);
+        }
+        
+
     }
     
     async update(params: {
