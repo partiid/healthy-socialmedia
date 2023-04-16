@@ -12,6 +12,7 @@ import {AuthenticatedRequest} from 'src/interfaces/authenticatedRequest.interfac
 import { isEmpty } from 'lodash';
 import { PostCommentService } from './postComment/postComment.service';
 import { PostCommentModel } from './postComment/postComment.model';
+import { AllowedActionGuard } from 'src/guards/allowedAction.guard';
 @Controller('post')
 @ApiTags("post")
 @UseGuards(JwtAuthGuard)
@@ -46,18 +47,21 @@ export class PostController {
   }
 
   @Post('/like')
+  @UseGuards(AllowedActionGuard)
   @HttpCode(HttpStatus.CREATED)
   @ApiOkResponse({description: "if post is already liked, the API will unlike the post and delete the record. Returns the status of the post like and the post like object. ", type: PostLikeResponse})
   async likePost(@Body() postLike: PostLikeModel, @Req() req: AuthenticatedRequest): Promise<PostLikeResponse> {
-    console.log("req user", req.user); 
+    
     let response: PostLikeResponse = {
       status: PostLikeStatus.LIKE,
       postLike: null
     };
     let postLikeCreated: PostLike; 
     
+    console.log("req.user.id_user", req.user); 
+    //deduct id user from the token; 
     postLike.id_user = req.user.id_user || postLike.id_user;
-    
+    console.log(postLike);
       postLikeCreated = await this.PostLikeService.findOne({
         id_post: postLike.id_post,
         id_user: postLike.id_user

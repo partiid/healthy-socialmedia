@@ -6,15 +6,18 @@ import { HttpCode, HttpStatus, NotFoundException } from "@nestjs/common";
 import { ApiTags, ApiBearerAuth, ApiOperation, ApiOkResponse, ApiResponse } from "@nestjs/swagger";
 import { AuthenticatedRequest } from "src/interfaces/authenticatedRequest.interface";
 import { JwtAuthGuard } from "src/modules/auth/jwtAuth.guard";
-
+import { AllowedActionGuard } from "src/guards/allowedAction.guard";
 
 
 @ApiTags("comment")
 @Controller('comment')
+@UseGuards(AllowedActionGuard)
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class PostCommentController {
     constructor(private PostCommentService: PostCommentService) {}
+
+
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
@@ -38,13 +41,7 @@ export class PostCommentController {
   @ApiResponse({status: 200, description: "id_user is OPTIONAL - it is deducted from session customer. Returns the comment object."})
   async deleteComment(@Param('id_comment', ParseIntPipe) id_comment: number , @Req() req: AuthenticatedRequest): Promise<Comment> {
     let response: Comment;
-    //postComment.id_user = req.user.id_user || postComment.id_user;
-    //if currently logged in user is not the owner of the comment, throw error
-    let comment: Comment | null = await this.PostCommentService.findOneByIdComment(id_comment);
-    if(comment != null && comment.id_user !== req.user.id_user) {
-      throw new BadRequestException("You are not the owner of this comment");
-      
-    }
+    
 
     try {
       response = await this.PostCommentService.delete(id_comment);

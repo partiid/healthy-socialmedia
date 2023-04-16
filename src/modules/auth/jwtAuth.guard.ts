@@ -12,7 +12,7 @@ export class JwtAuthGuard implements CanActivate {
         console.log("JwtAuthGuard.canActivate"); 
         const request = context.switchToHttp().getRequest();
         const token = this.extractTokenFromHeader(request);
-        console.log(token);
+        
         if (!token) {
           
           throw new UnauthorizedException();
@@ -24,7 +24,7 @@ export class JwtAuthGuard implements CanActivate {
               secret: process.env.JWT_SECRET
             }
           );
-          console.log("Payload:", payload);
+          
           // 💡 We're assigning the payload to the request object here
           // so that we can access it in our route handlers
           request['user'] = payload;

@@ -12,7 +12,7 @@ import { map } from 'rxjs/operators';
 export class ApiResponseInterceptor implements NestInterceptor {
     intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
         const statusCode = context.switchToHttp().getResponse().statusCode;
-        console.log("Status code: ", context.switchToHttp().getResponse().statusCode);
+        
         return next.handle().pipe(
             map((data) => ({
                 status: statusCode,

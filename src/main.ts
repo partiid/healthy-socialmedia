@@ -7,7 +7,7 @@ import { HttpExceptionFilter } from './filters/httpException.filter';
 import * as session from 'express-session';
 import * as passport from 'passport';
 import Redis from 'ioredis';
-import { AuthenticatedRequestInterceptor } from './interceptors/authenticatedRequest.interceptor';
+
 
 
 async function bootstrap() {
