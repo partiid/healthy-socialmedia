@@ -2,9 +2,9 @@ import { ApiConsumes, ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 import { IsNotEmpty, IsNumber, IsString } from "class-validator";
 
 export class PostLikeModel {
-    @ApiProperty()
-    @IsNotEmpty()
-    @IsNumber()
+    
+    @ApiPropertyOptional()
+    
     id_user: number;
 
     

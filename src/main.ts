@@ -7,6 +7,7 @@ import { HttpExceptionFilter } from './filters/httpException.filter';
 import * as session from 'express-session';
 import * as passport from 'passport';
 import Redis from 'ioredis';
+import { AuthenticatedRequestInterceptor } from './interceptors/authenticatedRequest.interceptor';
 
 
 async function bootstrap() {
@@ -47,6 +48,7 @@ async function bootstrap() {
     //app.useGlobalFilters(new HttpExceptionFilter());
     
     app.useGlobalInterceptors(new ApiResponseInterceptor());
+    app.useGlobalInterceptors(new AuthenticatedRequestInterceptor());
     //setup swagger
     const config = new DocumentBuilder()
         .setTitle('Template REST API')

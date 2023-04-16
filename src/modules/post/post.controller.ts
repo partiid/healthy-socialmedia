@@ -1,4 +1,4 @@
-import { Controller, Get, Param, UseGuards, Body, HttpStatus, Post, HttpCode, NotFoundException, ParseIntPipe } from '@nestjs/common';
+import { Controller, Get, Param, Req, UseGuards, Body, HttpStatus, Post, HttpCode, NotFoundException, ParseIntPipe } from '@nestjs/common';
 import { PostService } from './post.service';
 import { PostModel } from './post.model';
 import {PostObject} from './post.alias';
@@ -8,6 +8,8 @@ import { PostLikeService } from './postLike/postLIke.service';
 import { PostLikeModel } from './postLike/postLike.model';
 import { PostLike } from '@prisma/client';
 import { PostLikeResponse, PostLikeStatus } from './postLike/types/postLike.types';
+import {AuthenticatedRequest} from 'src/interfaces/authenticatedRequest.interface'
+import { isEmpty } from 'lodash';
 
 @Controller('post')
 @ApiTags("post")
@@ -18,8 +20,11 @@ export class PostController {
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
-  async create(@Body() post: PostModel): Promise<PostObject> {
+  async create(@Body() post: PostModel, @Req() req: AuthenticatedRequest): Promise<PostObject> {
     let response: PostObject;
+
+    post.id_user = req.user.id_user || post.id_user;
+    
     try {
       response = await this.postService.create({
       ...post
@@ -43,13 +48,30 @@ export class PostController {
   @HttpCode(HttpStatus.CREATED)
   
   @ApiOkResponse({description: "if post is already liked, the API will unlike the post and delete the record. Returns the status of the post like and the post like object. ", type: PostLikeResponse})
-  async likePost(@Body() postLike: PostLikeModel): Promise<PostLikeResponse> {
+  async likePost(@Body() postLike: PostLikeModel, @Req() req: AuthenticatedRequest): Promise<PostLikeResponse> {
     let response: PostLikeResponse = {
       status: PostLikeStatus.LIKE,
       postLike: null
     };
     let postLikeCreated: PostLike; 
     
+    postLike.id_user = req.user.id_user || postLike.id_user;
+    
+      postLikeCreated = await this.PostLikeService.findOne({
+        id_post: postLike.id_post,
+        id_user: postLike.id_user
+      })
+      if(!isEmpty(postLikeCreated)) {
+        await this.PostLikeService.delete({
+          id_post: postLike.id_post,
+          id_user: postLike.id_user
+        })
+        response.status = PostLikeStatus.UNLIKE;
+        response.postLike = postLikeCreated;
+        return response;
+      }
+    
+
     try {
       postLikeCreated = await this.PostLikeService.create({
         ...postLike
@@ -61,12 +83,9 @@ export class PostController {
     catch(err: any) {
       throw new NotFoundException(err);
     }
-    
     response.status = PostLikeStatus.LIKE; 
 
     //if user wants to like the same post, we want to remove like from the post based on the body - response would be the same
-      
-    
       response.postLike = postLikeCreated;
       return response;
     

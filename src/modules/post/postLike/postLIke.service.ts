@@ -103,6 +103,20 @@ export class PostLikeService  {
         })
     }
 
+    async findOne(where: PostLikeModel): Promise<PostLike> {
+        return await this.PrismaService.postLike.findFirst({
+            where: {
+                post: {
+                    id_post: where.id_post
+                },
+                user: {
+                    id_user: where.id_user
+                }
+            }
+        })
+
+    }
+
 
 
 

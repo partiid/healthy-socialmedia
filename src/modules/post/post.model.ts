@@ -3,9 +3,9 @@ import { IsNumber, Matches, IsInt, IsString,  IsOptional, IsNotEmpty } from "cla
 
 export class PostModel {
 
-    @ApiProperty()
+    @ApiPropertyOptional()
     @IsInt()
-    id_user: number;
+    id_user?: number;
 
     @ApiProperty()
     @Matches(/^[a-zA-Z0-9 -]*$/)
