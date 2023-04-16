@@ -2,6 +2,7 @@ import {
     CallHandler,
     ExecutionContext,
     NestInterceptor,
+    UnauthorizedException,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
@@ -13,6 +14,12 @@ export class AuthenticatedRequestInterceptor implements NestInterceptor {
         const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
 
         const user = request.user;
+
+        if(typeof user === 'undefined') {
+            throw new UnauthorizedException('Only logged customers can perform actions.');
+
+        }
+
         const AuthenticatedRequest: AuthenticatedRequest = Object.assign(request, {
             user: {id_user: request.user.id_user}
         })

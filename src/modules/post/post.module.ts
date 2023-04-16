@@ -8,10 +8,11 @@ import { TagModule } from '../tag/tag.module';
 import { PostTagModule } from '../post-tag/post-tag.module';
 import { PostLikeService } from './postLike/postLIke.service';
 import { PostCommentService } from './postComment/postComment.service';
+import { PostCommentController } from './postComment/postComment.controller';
 
 
 @Module({
-  controllers: [PostController],
+  controllers: [PostController, PostCommentController],
   providers: [PostService, PrismaService, PostLikeService, PostCommentService],
   imports: [forwardRef(() => UserModule), PostTagModule],
   exports: [PostService]

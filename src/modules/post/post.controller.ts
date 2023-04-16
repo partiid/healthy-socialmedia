@@ -2,21 +2,22 @@ import { Controller, Get, Param, Req, UseGuards, Body, HttpStatus, Post, HttpCod
 import { PostService } from './post.service';
 import { PostModel } from './post.model';
 import {PostObject} from './post.alias';
-import { ApiTags, ApiBearerAuth, ApiOperation, ApiOkResponse} from '@nestjs/swagger';
+import { ApiTags, ApiBearerAuth, ApiOperation, ApiOkResponse, ApiResponse} from '@nestjs/swagger';
 import { JwtAuthGuard } from '../auth/jwtAuth.guard';
 import { PostLikeService } from './postLike/postLIke.service';
 import { PostLikeModel } from './postLike/postLike.model';
-import { PostLike } from '@prisma/client';
+import { PostLike, Comment } from '@prisma/client';
 import { PostLikeResponse, PostLikeStatus } from './postLike/types/postLike.types';
 import {AuthenticatedRequest} from 'src/interfaces/authenticatedRequest.interface'
 import { isEmpty } from 'lodash';
-
+import { PostCommentService } from './postComment/postComment.service';
+import { PostCommentModel } from './postComment/postComment.model';
 @Controller('post')
 @ApiTags("post")
 //@UseGuards(JwtAuthGuard)
 //@ApiBearerAuth()
 export class PostController {
-  constructor(private readonly postService: PostService, private readonly PostLikeService: PostLikeService) {}
+  constructor(private readonly postService: PostService, private readonly PostLikeService: PostLikeService, private PostCommentService: PostCommentService) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
@@ -46,7 +47,6 @@ export class PostController {
 
   @Post('/like')
   @HttpCode(HttpStatus.CREATED)
-  
   @ApiOkResponse({description: "if post is already liked, the API will unlike the post and delete the record. Returns the status of the post like and the post like object. ", type: PostLikeResponse})
   async likePost(@Body() postLike: PostLikeModel, @Req() req: AuthenticatedRequest): Promise<PostLikeResponse> {
     let response: PostLikeResponse = {
@@ -93,4 +93,6 @@ export class PostController {
 
   }
 
+
+  
 }

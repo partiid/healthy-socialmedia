@@ -34,7 +34,26 @@ export class PostService implements ServiceInterface<Post>{
 
             },
             include: {
-                comments: true,
+                comments: {
+                    select: {
+                        id_comment: true,
+                        content: true,
+                        createdAt: true,
+                        likes: true,
+                        user: {
+                            select: {
+                                id_user: true,
+                                username: true,
+                                details: {
+                                    select: {
+                                        image: true
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+                },
                 likes: true,
                 PostTag: {
                     select:{
