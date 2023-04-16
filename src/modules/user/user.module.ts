@@ -5,11 +5,13 @@ import { PrismaService } from 'src/prisma.service';
 import { CryptoService } from 'src/shared/services/crypto.service';
 import {UserDetailsService} from './userDetails/userDetails.service';
 import { PostModule } from '../post/post.module';
+import { TagModule } from '../tag/tag.module';
+import { UserTagService } from './userTag/userTag.service';
 
 @Module({
   controllers: [UserController],
-  providers: [UserService, UserDetailsService, PrismaService, CryptoService],
+  providers: [UserService, UserDetailsService, UserTagService, PrismaService, CryptoService],
   exports: [UserService],
-  imports: [forwardRef(() => PostModule)]
+  imports: [forwardRef(() => PostModule), TagModule]
 })
 export class UserModule {}

@@ -3,7 +3,7 @@ import { UserService } from './user.service';
 import { PostObject } from '../post/post.alias';
 import { User, UserDetails } from '@prisma/client';
 import { UserModel } from './user.model';
-import { ApiBearerAuth, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger';
 import { PostService } from '../post/post.service';
 import { ParseIntPipe } from '@nestjs/common';
 import { UserDetailsService } from './userDetails/userDetails.service';
@@ -12,11 +12,14 @@ import { AllowedActionGuard } from 'src/guards/allowedAction.guard';
 import { Request } from 'express';
 import { AuthenticatedRequest } from 'src/interfaces/authenticatedRequest.interface';
 import { JwtAuthGuard } from '../auth/jwtAuth.guard';
+import { UserTagService } from './userTag/userTag.service';
+import { UserTagModel } from './userTag/userTag.model';
 @Controller('user')
 @ApiTags("user")
 export class UserController {
   constructor(private readonly userService: UserService,
-    @Inject(forwardRef(() => PostService)) private PostService: PostService, private UserDetailsService: UserDetailsService) {}
+    @Inject(forwardRef(() => PostService)) private PostService: PostService, private UserDetailsService: UserDetailsService,
+    private UserTagService: UserTagService) {}
 
   @Post()
   @HttpCode(HttpStatus.CREATED)
@@ -35,6 +38,24 @@ export class UserController {
     
   }
 
+  @Post('/tags')
+  @UseGuards(AllowedActionGuard)
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({description: "id_user is deducted from token"})
+  async createUserTags(@Body() tags: UserTagModel, @Req() req: AuthenticatedRequest): Promise<User> {
+
+    
+    tags.id_user = req.user.id_user || tags.id_user;
+
+     if(await this.UserTagService.create(tags) == true) {
+        return this.userService.findOne({
+          id_user: tags.id_user
+        }); 
+     };
+
+
+  }
   @Get('/:id_user/posts')
   async getUserPosts(@Param('id_user', ParseIntPipe) id_user: number): Promise<PostObject[]> {
     return this.PostService.findAllByIdUser(id_user);
@@ -65,6 +86,9 @@ export class UserController {
     return user.details; 
     
   }
+
+  
+
 
 
 
