@@ -3,7 +3,7 @@ import { UserService } from './user.service';
 import { UserController } from './user.controller';
 import { PrismaService } from 'src/prisma.service';
 import { CryptoService } from 'src/shared/services/crypto.service';
-import {UserDetailsService} from './userDetails.service';
+import {UserDetailsService} from './userDetails/userDetails.service';
 import { PostModule } from '../post/post.module';
 
 @Module({

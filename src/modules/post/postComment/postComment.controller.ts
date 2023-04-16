@@ -3,7 +3,7 @@ import { PostCommentService } from "./postComment.service";
 import { PostCommentModel } from "./postComment.model";
 import { Comment } from "@prisma/client";
 import { HttpCode, HttpStatus, NotFoundException } from "@nestjs/common";
-import { ApiTags, ApiBearerAuth, ApiOperation, ApiOkResponse, ApiResponse } from "@nestjs/swagger";
+import { ApiTags, ApiBearerAuth, ApiOperation, ApiResponse, ApiConsumes } from "@nestjs/swagger";
 import { AuthenticatedRequest } from "src/interfaces/authenticatedRequest.interface";
 import { JwtAuthGuard } from "src/modules/auth/jwtAuth.guard";
 import { AllowedActionGuard } from "src/guards/allowedAction.guard";
@@ -20,6 +20,7 @@ export class PostCommentController {
 
 
   @Post()
+  @ApiOperation({description: "id user is deducted from token"})
   @HttpCode(HttpStatus.CREATED)
   @ApiResponse({status: 201, description: "id_user is OPTIONAL - it is deducted from session customer. Returns the comment object."})
   async commentPost(@Body() postComment: PostCommentModel, @Req() req: AuthenticatedRequest): Promise<Comment> {
@@ -56,6 +57,7 @@ export class PostCommentController {
 @Patch()
 @HttpCode(HttpStatus.OK)
 @ApiResponse({status: 200, description: "id_user is OPTIONAL - it is deducted from session customer. Returns the updated comment object."})
+@ApiOperation({description: "provide only id_comment and content to update the comment"})
 async updateComment(@Body() postComment: PostCommentModel, @Req() req: AuthenticatedRequest): Promise<Comment> {
   let response: Comment;
 
