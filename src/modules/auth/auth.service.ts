@@ -12,7 +12,8 @@ export class AuthService {
 
     async validateUser(username: string, password: string): Promise<any> {
 
-        const user = await this.UserService.findOne({username});
+        const user = await this.UserService.findOneByUsername(username);
+        
         
         
         if (user && await this.CryptoService.compare(password, user.password)) {
@@ -24,9 +25,9 @@ export class AuthService {
 
     async login(user: any) {
         
-        const payload = { username: user.username, sub: user.id, id_user: user.id_user };
+        const payload = { username: user.username, sub: user.id_user, user };
         return {
-            access_token: this.JwtService.sign(payload),
+            access_token: await this.JwtService.signAsync(payload),
         };
     }
 

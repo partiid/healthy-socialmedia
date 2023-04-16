@@ -22,11 +22,11 @@ async function bootstrap() {
     //setup session 
     app.use(session({
         store: new RedisStore({ client: redisClient, logErrors: true }),
-        secret: '125A6SD1AS56D1',
+        secret: process.env.JWT_SECRET,
         resave: false,
         saveUninitialized: false,
         cookie: {
-            maxAge: 6 * 60 * 60 * 3600,
+            maxAge: 60,
 
             secure: false, //set this to false for now, since we are not using https 
         }
@@ -48,7 +48,7 @@ async function bootstrap() {
     //app.useGlobalFilters(new HttpExceptionFilter());
     
     app.useGlobalInterceptors(new ApiResponseInterceptor());
-    app.useGlobalInterceptors(new AuthenticatedRequestInterceptor());
+    //app.useGlobalInterceptors(new AuthenticatedRequestInterceptor());
     //setup swagger
     const config = new DocumentBuilder()
         .setTitle('Template REST API')

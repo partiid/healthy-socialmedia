@@ -15,6 +15,7 @@ export class AuthenticatedRequestInterceptor implements NestInterceptor {
 
         const user = request.user;
 
+        console.log("user:", user);
         if(typeof user === 'undefined') {
             throw new UnauthorizedException('Only logged customers can perform actions.');
 

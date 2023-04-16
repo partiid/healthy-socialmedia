@@ -14,8 +14,8 @@ import { PostCommentService } from './postComment/postComment.service';
 import { PostCommentModel } from './postComment/postComment.model';
 @Controller('post')
 @ApiTags("post")
-//@UseGuards(JwtAuthGuard)
-//@ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth()
 export class PostController {
   constructor(private readonly postService: PostService, private readonly PostLikeService: PostLikeService, private PostCommentService: PostCommentService) {}
 
@@ -49,6 +49,7 @@ export class PostController {
   @HttpCode(HttpStatus.CREATED)
   @ApiOkResponse({description: "if post is already liked, the API will unlike the post and delete the record. Returns the status of the post like and the post like object. ", type: PostLikeResponse})
   async likePost(@Body() postLike: PostLikeModel, @Req() req: AuthenticatedRequest): Promise<PostLikeResponse> {
+    console.log("req user", req.user); 
     let response: PostLikeResponse = {
       status: PostLikeStatus.LIKE,
       postLike: null

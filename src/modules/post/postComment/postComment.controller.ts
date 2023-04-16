@@ -1,4 +1,4 @@
-import { Controller, Post, Req, Body, UseGuards } from "@nestjs/common";
+import { Controller, Post, Param, Req, Body, Delete, UseGuards, Patch, ParseIntPipe, BadRequestException } from "@nestjs/common";
 import { PostCommentService } from "./postComment.service";
 import { PostCommentModel } from "./postComment.model";
 import { Comment } from "@prisma/client";
@@ -8,21 +8,21 @@ import { AuthenticatedRequest } from "src/interfaces/authenticatedRequest.interf
 import { JwtAuthGuard } from "src/modules/auth/jwtAuth.guard";
 
 
+
 @ApiTags("comment")
 @Controller('comment')
-// @UseGuards(JwtAuthGuard)
-// @ApiBearerAuth()
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth()
 export class PostCommentController {
     constructor(private PostCommentService: PostCommentService) {}
 
-@Post()
+  @Post()
   @HttpCode(HttpStatus.CREATED)
   @ApiResponse({status: 201, description: "id_user is OPTIONAL - it is deducted from session customer. Returns the comment object."})
   async commentPost(@Body() postComment: PostCommentModel, @Req() req: AuthenticatedRequest): Promise<Comment> {
     let response: Comment;
 
     postComment.id_user = req.user.id_user || postComment.id_user;
-    
     try {
       response = await this.PostCommentService.create({
       ...postComment
@@ -33,5 +33,47 @@ export class PostCommentController {
     return response; 
 }
 
+  @Delete(":id_comment")
+  @HttpCode(HttpStatus.OK)
+  @ApiResponse({status: 200, description: "id_user is OPTIONAL - it is deducted from session customer. Returns the comment object."})
+  async deleteComment(@Param('id_comment', ParseIntPipe) id_comment: number , @Req() req: AuthenticatedRequest): Promise<Comment> {
+    let response: Comment;
+    //postComment.id_user = req.user.id_user || postComment.id_user;
+    //if currently logged in user is not the owner of the comment, throw error
+    let comment: Comment | null = await this.PostCommentService.findOneByIdComment(id_comment);
+    if(comment != null && comment.id_user !== req.user.id_user) {
+      throw new BadRequestException("You are not the owner of this comment");
+      
+    }
 
+    try {
+      response = await this.PostCommentService.delete(id_comment);
+
+  } catch(err: any) {
+      throw new NotFoundException(err); 
+  }
+    return response;
+
+}
+
+@Patch()
+@HttpCode(HttpStatus.OK)
+@ApiResponse({status: 200, description: "id_user is OPTIONAL - it is deducted from session customer. Returns the updated comment object."})
+async updateComment(@Body() postComment: PostCommentModel, @Req() req: AuthenticatedRequest): Promise<Comment> {
+  let response: Comment;
+
+  postComment.id_user = req.user.id_user || postComment.id_user;
+
+  try {
+    response = await this.PostCommentService.update({
+      ...postComment
+  })
+
+} catch(err: any) {
+    throw new NotFoundException(err); 
+}
+  return response;
+
+
+}
 }

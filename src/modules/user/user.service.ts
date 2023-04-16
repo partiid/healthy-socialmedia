@@ -33,6 +33,22 @@ export class UserService implements ServiceInterface<User> {
  
     }
 
+    async findOneByUsername(username: string): Promise<User> {
+        return this.prismaService.user.findFirst({
+            where: {
+                username
+            },
+            include: {
+                details: false,
+                posts: false,
+                comments: false,
+                userTags: false
+
+            }
+            
+        }); 
+ 
+    }
 
     
     async create(data: Prisma.UserCreateInput): Promise<User> {
