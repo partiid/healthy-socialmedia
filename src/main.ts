@@ -8,6 +8,9 @@ import * as session from 'express-session';
 import * as passport from 'passport';
 import Redis from 'ioredis';
 
+import * as dotenv from 'dotenv';
+dotenv.config();
+
 async function bootstrap() {
     const app = await NestFactory.create(AppModule, {
         cors: false,
