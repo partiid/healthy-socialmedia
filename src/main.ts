@@ -1,3 +1,6 @@
+import * as dotenv from 'dotenv';
+dotenv.config();
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
@@ -7,9 +10,6 @@ import { HttpExceptionFilter } from './filters/httpException.filter';
 import * as session from 'express-session';
 import * as passport from 'passport';
 import Redis from 'ioredis';
-
-import * as dotenv from 'dotenv';
-dotenv.config();
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule, {
