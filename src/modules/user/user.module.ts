@@ -11,7 +11,7 @@ import { UserTagService } from './userTag/userTag.service';
 @Module({
   controllers: [UserController],
   providers: [UserService, UserDetailsService, UserTagService, PrismaService, CryptoService],
-  exports: [UserService],
+  exports: [UserService, UserTagService],
   imports: [forwardRef(() => PostModule), TagModule]
 })
 export class UserModule {}

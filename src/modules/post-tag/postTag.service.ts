@@ -24,7 +24,7 @@ export class PostTagService implements PartialServiceInterface<PostTag> {
     }
 
     async findOne(where: Prisma.PostTagWhereInput): Promise<PostTag> {
-        console.log("where", where);
+        
         return this.PrismaService.postTag.findFirst({
             where: {
                 post: {
@@ -38,10 +38,13 @@ export class PostTagService implements PartialServiceInterface<PostTag> {
         })
 
     }
+
+
   
+
     async create(tags: Array<number>, post: Post): Promise<boolean> {
 
-        console.log("called");
+        
         let result: boolean = true;
         try {
             for(let tag of tags){

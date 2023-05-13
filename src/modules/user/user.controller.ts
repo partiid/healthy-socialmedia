@@ -61,15 +61,19 @@ export class UserController {
 
   }
   @Get('/:id_user/posts')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   async getUserPosts(@Param('id_user', ParseIntPipe) id_user: number): Promise<PostObject[]> {
-    return this.PostService.findAllByIdUser(id_user);
+    return await this.PostService.findAllByIdUser(id_user);
   }
+
 
   
   @Post('/details')
   @UseGuards(AllowedActionGuard)
   @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
+  @ApiOperation({description: "Create user details - bio, profile image etc."})
   async updateUserDetails(@Body() user: UserDetailsModel, @Req() req: AuthenticatedRequest): Promise<UserDetails> {
     user.id_user = req.user.id_user || user.id_user;
 
@@ -79,11 +83,15 @@ export class UserController {
 
 
   @Get('/:id_user/details')
+  @ApiOperation({description: "Get ONLY user details"})
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   async getUserDetails(@Param('id_user', ParseIntPipe) id_user: number): Promise<UserDetails> {
     
     const user: any = await this.userService.findOne({
       id_user
     });
+
     if(!user) {
       throw new BadRequestException("User not found");
     }
@@ -91,7 +99,15 @@ export class UserController {
     
   }
 
-  
+  @Get("/:id_user/profile")
+  @ApiOperation({description: "Get full user profile - posts w/ likes & comments, details, tags"})
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  async getUserProfile(@Param("id_user", ParseIntPipe) id_user: number): Promise<User> {
+   return this.userService.findOne({
+     id_user
+   });
+  }
 
 
 

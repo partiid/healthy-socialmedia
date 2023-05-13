@@ -16,7 +16,8 @@ export class UserDetailsService implements PartialServiceInterface<UserDetails> 
         return this.PrismaService.userDetails.findUnique({
             where: {
                 id_user: where
-            }
+            },
+            
         }); 
     }
 

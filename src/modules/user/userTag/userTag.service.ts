@@ -56,8 +56,24 @@ export class UserTagService {
         
     }
 
-    async findByUser(id_user: number): Promise<Tag[]> {
-       return null; 
+    /**
+     * @description Get all user tags by id_user
+     * @param id_user 
+     * @returns 
+     */
+    async findAll(id_user: number): Promise<Tag[]> {
+        return await this.PrismaService.userTag.findMany({
+            where: {
+                id_user
+            },
+            select: {
+                tag: true
+            }
+        }).then((data) => {
+            return data.map((item) => {
+                return item.tag; 
+            })
+        })
 
     }
 
