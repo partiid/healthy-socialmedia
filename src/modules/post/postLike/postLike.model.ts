@@ -7,9 +7,9 @@ export class PostLikeModel {
     id_user?: number;
 
     
+    @ApiPropertyOptional()
     @IsNotEmpty()
     @IsNumber()
-    @ApiPropertyOptional()
     id_post: number;
 
 

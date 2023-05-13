@@ -47,12 +47,16 @@ export class UserController {
 
     
     tags.id_user = req.user.id_user || tags.id_user;
-
-     if(await this.UserTagService.create(tags) == true) {
+    try {
+      if(await this.UserTagService.create(tags) == true) {
         return this.userService.findOne({
           id_user: tags.id_user
         }); 
      };
+    } catch(err: any) {
+      throw new BadRequestException(err);
+    }
+     
 
 
   }

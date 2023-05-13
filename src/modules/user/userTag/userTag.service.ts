@@ -44,7 +44,7 @@ export class UserTagService {
                 })
             } catch(err: any) {
                 
-                throw new Error("Some error occured");
+                throw new Error("Some error occured, probably you already subscribe to this tag");
             }
             
 
