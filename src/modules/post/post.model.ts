@@ -3,7 +3,7 @@ import { IsNumber, Matches, IsInt, IsString,  IsOptional, IsNotEmpty } from "cla
 
 export class PostModel {
 
-    @ApiPropertyOptional()
+    @ApiPropertyOptional({"description": "its optional"})
     id_user?: number;
 
     @ApiProperty()

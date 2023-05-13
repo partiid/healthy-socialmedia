@@ -3,9 +3,8 @@ import { IsNotEmpty, IsNumber, IsString } from "class-validator";
 
 export class PostLikeModel {
     
-    @ApiPropertyOptional()
-    
-    id_user: number;
+    @ApiPropertyOptional({description: "Its optional "})
+    id_user?: number;
 
     
     @IsNotEmpty()

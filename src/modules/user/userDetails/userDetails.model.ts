@@ -3,9 +3,8 @@ import { IsNumber, IsOptional } from "class-validator";
 
 export class UserDetailsModel {
 
-    @ApiPropertyOptional({description: "Use to update or delete user details"})
+    @ApiPropertyOptional({description: "Use to update or delete user details - it's optional"})
     @IsOptional()
-    @IsNumber()
     id_user?: number;
 
     @ApiProperty()
