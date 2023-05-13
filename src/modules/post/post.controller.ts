@@ -38,6 +38,21 @@ export class PostController {
   }
 
   
+  /**
+   * 
+   * @returns {Promise<PostObject[]>} get all posts depending on the user tags if he has any  
+   */
+  @Get()
+  @UseGuards(JwtAuthGuard)
+  async getPosts(): Promise<PostObject[]> {
+    //should we filter posts by tags he likes? 
+      return await this.postService.findAll();
+    
+  
+
+
+  }
+
   @Get(":id_post")
   async getPost(@Param('id_post', ParseIntPipe) id_post: number): Promise<PostObject> {
     return await this.postService.findOne({
