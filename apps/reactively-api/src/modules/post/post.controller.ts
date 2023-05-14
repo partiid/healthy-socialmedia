@@ -215,7 +215,7 @@ export class PostController {
         response.postLike = postLikeCreated;
 
         this.NotificationClient.emit(
-            'post_like',
+            'post.like',
             new PostLikeEvent(postLike.id_user, postLike.id_post),
         );
         return response;
