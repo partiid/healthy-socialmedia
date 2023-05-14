@@ -1,5 +1,5 @@
 # compiled output
-/common/node_modules
+/common/node_modules/
 
 /dist
 /node_modules
