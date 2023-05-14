@@ -52,6 +52,9 @@ dependencies:
   connect-redis:
     specifier: ^6.1.3
     version: 6.1.3
+  dotenv:
+    specifier: ^16.0.3
+    version: 16.0.3
   express-session:
     specifier: ^1.17.3
     version: 1.17.3
@@ -2465,6 +2468,11 @@ packages:
     dependencies:
       esutils: 2.0.3
     dev: true
+
+  /dotenv@16.0.3:
+    resolution: {integrity: sha512-7GO6HghkA5fYG9TYnNxi14/7K9f5occMlp3zXAuSxn7CKCxt9xbNWG7yF8hTCSUchlfWSe3uLmlPfigevRItzQ==}
+    engines: {node: '>=12'}
+    dev: false
 
   /duration@0.2.2:
     resolution: {integrity: sha512-06kgtea+bGreF5eKYgI/36A6pLXggY7oR4p1pq4SmdFBn1ReOL5D8RhG64VrqfTTKNucqqtBAwEj8aB88mcqrg==}
