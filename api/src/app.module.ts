@@ -1,4 +1,10 @@
-import { Module, NestModule, MiddlewareConsumer, CacheModule, CacheInterceptor } from '@nestjs/common';
+import {
+    Module,
+    NestModule,
+    MiddlewareConsumer,
+    CacheModule,
+    CacheInterceptor,
+} from '@nestjs/common';
 import { AppController } from './app.controller';
 import { DevtoolsModule } from '@nestjs/devtools-integration';
 import { AppService } from './app.service';
@@ -11,29 +17,38 @@ import * as redisStore from 'cache-manager-redis-store';
 import { PostModule } from './modules/post/post.module';
 import { PostTagModule } from './modules/post-tag/post-tag.module';
 import { TagModule } from './modules/tag/tag.module';
+import { ClientsModule } from '@nestjs/microservices';
+import { Transport } from '@nestjs/microservices';
 @Module({
-    imports: [ AuthModule, UserModule, PostModule, PostTagModule, TagModule,
+    imports: [
+        AuthModule,
+        UserModule,
+        PostModule,
+        PostTagModule,
+        TagModule,
         CacheModule.register<ClientOpts>({
             store: redisStore,
             host: 'localhost',
             port: 6379,
-            ttl: 3600
+            ttl: 3600,
         }),
         DevtoolsModule.register({
-            http: true
-        })
+            http: true,
+        }),
+        ClientsModule.register([
+            {
+                name: 'NOTIFICATIONS',
+                transport: Transport.TCP,
+            },
+        ]),
     ],
     controllers: [AppController],
-    providers: [AppService,
+    providers: [
+        AppService,
         {
             provide: APP_FILTER,
             useClass: HttpExceptionFilter,
         },
-
-
     ],
-
 })
-export class AppModule {
-  
-}
+export class AppModule {}
