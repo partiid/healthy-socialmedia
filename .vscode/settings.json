@@ -1,5 +1,7 @@
 {
-    "editor.formatOnSave": true,
-    "typescript.preferences.importModuleSpecifier": "relative",
-    
+    "workbench.colorCustomizations": {
+        "activityBar.background": "#302516",
+        "titleBar.activeBackground": "#43341F",
+        "titleBar.activeForeground": "#FCFBFA"
+    }
 }
