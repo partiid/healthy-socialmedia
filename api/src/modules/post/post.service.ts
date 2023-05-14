@@ -181,11 +181,7 @@ export class PostService implements ServiceInterface<Post> {
 
     async create(data: PostModel): Promise<Post> {
         //todo: upload image to post
-<<<<<<< HEAD:api/src/modules/post/post.service.ts
-        const { content, id_user, title, tags } = data;
-=======
         const { content, title, id_user, tags } = data;
->>>>>>> 59e202ab74c6499403b832ee41031255e8112968:src/modules/post/post.service.ts
 
         const userExists = await this.UserService.findOne({
             id_user,

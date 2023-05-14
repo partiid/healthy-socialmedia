@@ -178,7 +178,6 @@ export class PostController {
         @Body() postLike: PostLikeModel,
         @Req() req: AuthenticatedRequest,
     ): Promise<PostLikeResponse> {
-        this.Logger.log('POSTLIKE: ', postLike);
         let response: PostLikeResponse = {
             status: PostLikeStatus.LIKE,
             postLike: null,
@@ -192,11 +191,6 @@ export class PostController {
             id_post: postLike.id_post,
             id_user: postLike.id_user,
         });
-        console.log("Emitting event 'post_like'");
-        this.NotificationClient.emit(
-            'post_like',
-            new PostLikeEvent(postLike.id_user, postLike.id_post),
-        );
 
         if (!isEmpty(postLikeCreated)) {
             await this.PostLikeService.delete({
@@ -220,6 +214,10 @@ export class PostController {
         //if user wants to like the same post, we want to remove like from the post based on the body - response would be the same
         response.postLike = postLikeCreated;
 
+        this.NotificationClient.emit(
+            'post_like',
+            new PostLikeEvent(postLike.id_user, postLike.id_post),
+        );
         return response;
     }
 }

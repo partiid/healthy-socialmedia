@@ -1,5 +1,5 @@
 {
-  "name": "rest-api-bootstrap-nest",
+  "name": "reactively-api",
   "version": "0.0.1",
   "description": "Rest api bootstrap skeleton written with nestjs and typescript. It contains basic user service with authentication and authorization and also redis cache and prisma database.",
   "author": "Marek Łysiak ",
