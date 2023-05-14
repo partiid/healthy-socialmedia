@@ -21,9 +21,9 @@ import {
     ApiResponse,
     ApiConsumes,
 } from '@nestjs/swagger';
-import { AuthenticatedRequest } from 'src/interfaces/authenticatedRequest.interface';
-import { JwtAuthGuard } from 'src/modules/auth/jwtAuth.guard';
-import { AllowedActionGuard } from 'src/guards/allowedAction.guard';
+import { AuthenticatedRequest } from '../../../interfaces/authenticatedRequest.interface';
+import { JwtAuthGuard } from '../../auth/jwtAuth.guard';
+import { AllowedActionGuard } from '../../../guards/allowedAction.guard';
 import { PostCommentLikeModel } from './postCommentLike.model';
 import { isEmpty } from 'lodash';
 import {

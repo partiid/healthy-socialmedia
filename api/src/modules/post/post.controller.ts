@@ -11,7 +11,10 @@ import {
     NotFoundException,
     ParseIntPipe,
     Delete,
+    Logger,
+    Inject,
 } from '@nestjs/common';
+import { PostLikeEvent } from '../../../../common/events/post/postLike.event';
 import { PostService } from './post.service';
 import { PostModel } from './post.model';
 import { PostObject } from './post.alias';
@@ -30,26 +33,30 @@ import {
     PostLikeResponse,
     PostLikeStatus,
 } from './postLike/types/postLike.types';
-import { AuthenticatedRequest } from 'src/interfaces/authenticatedRequest.interface';
+import { AuthenticatedRequest } from '../../interfaces/authenticatedRequest.interface';
 import { isEmpty } from 'lodash';
 import { PostCommentService } from './postComment/postComment.service';
 import { PostCommentModel } from './postComment/postComment.model';
-import { AllowedActionGuard } from 'src/guards/allowedAction.guard';
+import { AllowedActionGuard } from '../../guards/allowedAction.guard';
 import { UserService } from '../user/user.service';
 import { UserTagService } from '../user/userTag/userTag.service';
 import { PostTagService } from '../post-tag/postTag.service';
+import { ClientProxy } from '@nestjs/microservices';
 @Controller('post')
 @ApiTags('post')
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class PostController {
+    private readonly Logger = new Logger(PostController.name);
     constructor(
-        private readonly postService: PostService,
+        private readonly PostService: PostService,
         private readonly PostLikeService: PostLikeService,
         private PostCommentService: PostCommentService,
         private readonly UserService: UserService,
         private UserTagService: UserTagService,
         private PostTagService: PostTagService,
+        @Inject('NOTIFICATIONS')
+        private NotificationClient: ClientProxy,
     ) {}
 
     @Post()
@@ -63,7 +70,7 @@ export class PostController {
         post.id_user = req.user.id_user || post.id_user;
 
         try {
-            response = await this.postService.create({
+            response = await this.PostService.create({
                 ...post,
             });
         } catch (err: any) {
@@ -82,7 +89,7 @@ export class PostController {
     @ApiBearerAuth()
     async getPosts(): Promise<PostObject[]> {
         //should we filter posts by tags he likes?
-        return await this.postService.findAll();
+        return await this.PostService.findAll();
     }
 
     @Get('/feed')
@@ -103,8 +110,8 @@ export class PostController {
         if (!user) throw new NotFoundException('User not found'); //don't really need to do this since we are using guards
         //find all user tags
         let userTags = await this.UserTagService.findAll(user.id_user);
-        console.log('User tags: ', userTags);
-        let posts: PostObject[] = await this.postService.findAll();
+
+        let posts: PostObject[] = await this.PostService.findAll();
 
         //if tags are empty, just return all posts since we don't filter by tags
         if (!isEmpty(userTags)) {
@@ -132,7 +139,7 @@ export class PostController {
     async getPost(
         @Param('id_post', ParseIntPipe) id_post: number,
     ): Promise<PostObject> {
-        return await this.postService.findOne({
+        return await this.PostService.findOne({
             id_post,
         });
     }
@@ -145,21 +152,21 @@ export class PostController {
         @Param('id_post', ParseIntPipe) id_post: number,
         @Req() req: AuthenticatedRequest,
     ): Promise<PostObject> {
-        let post = await this.postService.findOne({ id_post });
+        let post = await this.PostService.findOne({ id_post });
         if (!post) throw new NotFoundException('Post not found');
         if (post.id_user != req.user.id_user)
             throw new NotFoundException(
                 'You are not allowed to delete this post',
             );
         try {
-            return await this.postService.delete({ id_post });
+            return await this.PostService.delete({ id_post });
         } catch (err: any) {
             throw new NotFoundException(err);
         }
     }
 
     @Post('/like')
-    @UseGuards(AllowedActionGuard)
+    //@UseGuards(AllowedActionGuard)
     @UseGuards(JwtAuthGuard)
     @HttpCode(HttpStatus.CREATED)
     @ApiOkResponse({
@@ -171,6 +178,7 @@ export class PostController {
         @Body() postLike: PostLikeModel,
         @Req() req: AuthenticatedRequest,
     ): Promise<PostLikeResponse> {
+        this.Logger.log('POSTLIKE: ', postLike);
         let response: PostLikeResponse = {
             status: PostLikeStatus.LIKE,
             postLike: null,
@@ -179,11 +187,17 @@ export class PostController {
 
         //deduct id user from the token;
         postLike.id_user = req.user.id_user || postLike.id_user;
-        console.log(postLike);
+        console.log('POSTLIKE: ', postLike);
         postLikeCreated = await this.PostLikeService.findOne({
             id_post: postLike.id_post,
             id_user: postLike.id_user,
         });
+        console.log("Emitting event 'post_like'");
+        this.NotificationClient.emit(
+            'post_like',
+            new PostLikeEvent(postLike.id_user, postLike.id_post),
+        );
+
         if (!isEmpty(postLikeCreated)) {
             await this.PostLikeService.delete({
                 id_post: postLike.id_post,
@@ -205,6 +219,7 @@ export class PostController {
 
         //if user wants to like the same post, we want to remove like from the post based on the body - response would be the same
         response.postLike = postLikeCreated;
+
         return response;
     }
 }

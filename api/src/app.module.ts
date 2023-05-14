@@ -17,7 +17,7 @@ import * as redisStore from 'cache-manager-redis-store';
 import { PostModule } from './modules/post/post.module';
 import { PostTagModule } from './modules/post-tag/post-tag.module';
 import { TagModule } from './modules/tag/tag.module';
-import { ClientsModule } from '@nestjs/microservices';
+import { ClientsModule, NestMicroservice } from '@nestjs/microservices';
 import { Transport } from '@nestjs/microservices';
 @Module({
     imports: [
@@ -35,12 +35,6 @@ import { Transport } from '@nestjs/microservices';
         DevtoolsModule.register({
             http: true,
         }),
-        ClientsModule.register([
-            {
-                name: 'NOTIFICATIONS',
-                transport: Transport.TCP,
-            },
-        ]),
     ],
     controllers: [AppController],
     providers: [
@@ -50,5 +44,8 @@ import { Transport } from '@nestjs/microservices';
             useClass: HttpExceptionFilter,
         },
     ],
+    exports: [UserModule, PostModule],
 })
 export class AppModule {}
+//export for microservice
+export class ApiModule extends AppModule {}

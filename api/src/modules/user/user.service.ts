@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { ServiceInterface } from 'src/interfaces/service.interface';
-import { PrismaService } from 'src/prisma.service';
+import { ServiceInterface } from '../../interfaces/service.interface';
+import { PrismaService } from '../../prisma.service';
 import { User, Prisma, PrismaClient } from '@prisma/client';
-import { CryptoService } from 'src/shared/services/crypto.service';
-import { PrismaTools } from 'src/tools/prisma/prisma.tools';
+import { CryptoService } from '../../shared/services/crypto.service';
+import { PrismaTools } from '../../tools/prisma/prisma.tools';
 
 @Injectable()
 export class UserService implements ServiceInterface<User> {

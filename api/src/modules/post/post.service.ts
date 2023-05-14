@@ -1,10 +1,10 @@
 import { Injectable, Inject, forwardRef } from '@nestjs/common';
-import { ServiceInterface } from 'src/interfaces/service.interface';
+import { ServiceInterface } from '../../interfaces/service.interface';
 import { Post, Prisma } from '@prisma/client';
 import { PostModel } from './post.model';
-import { PrismaService } from 'src/prisma.service';
+import { PrismaService } from '../../prisma.service';
 import { UserService } from '../user/user.service';
-import { PostTagService } from 'src/modules/post-tag/postTag.service';
+import { PostTagService } from '../post-tag/postTag.service';
 @Injectable()
 export class PostService implements ServiceInterface<Post> {
     constructor(
