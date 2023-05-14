@@ -24,9 +24,9 @@ export class UserService implements ServiceInterface<User> {
             include: {
                 details: true,
                 posts: {
-                    include: {
+                    select: {
                         likes: {
-                            include: {
+                            select: {
                                 user: {
                                     select: {
                                         id_user: true,
@@ -42,6 +42,9 @@ export class UserService implements ServiceInterface<User> {
                         },
                         comments: {
                             select: {
+                                id_comment: true,
+                                createdAt: true,
+                                updatedAt: true,
                                 likes: {
                                     select: {
                                         id_user: true,
@@ -76,6 +79,9 @@ export class UserService implements ServiceInterface<User> {
                 },
                 comments: {
                     select: {
+                        id_comment: true,
+                        createdAt: true,
+                        updatedAt: true,
                         user: {
                             select: {
                                 id_user: true,

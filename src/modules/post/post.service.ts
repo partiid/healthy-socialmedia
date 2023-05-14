@@ -76,7 +76,7 @@ export class PostService implements ServiceInterface<Post> {
                     },
                 },
 
-                PostTag: {
+                tags: {
                     select: {
                         tag: {
                             select: {
@@ -162,7 +162,7 @@ export class PostService implements ServiceInterface<Post> {
                         id_post_like: true,
                     },
                 },
-                PostTag: {
+                tags: {
                     select: {
                         id_tag: false,
                         id_post: false,
@@ -217,7 +217,14 @@ export class PostService implements ServiceInterface<Post> {
     }): Promise<any> {
         throw new Error('Method not implemented.');
     }
+
     async delete(where: Prisma.PostWhereUniqueInput): Promise<Post> {
-        throw new Error('Method not implemented.');
+        try {
+            return await this.PrismaService.post.delete({
+                where,
+            });
+        } catch (err: any) {
+            throw new Error(err);
+        }
     }
 }

@@ -32,7 +32,7 @@ model UserDetails {
   id_user_details Int     @id @default(autoincrement())
   bio             String?
   id_user         Int     @unique
-  user            User    @relation(fields: [id_user], references: [id_user])
+  user            User    @relation(fields: [id_user], references: [id_user], onDelete: Cascade)
   id_image        Int?    @unique
   image           Image?  @relation(fields: [id_image], references: [id_image])
   createdAt DateTime @default(now())
@@ -66,7 +66,7 @@ model Post {
   image    Image?     @relation(fields: [id_image], references: [id_image])
   comments Comment[]
   likes    PostLike[]
-  PostTag  PostTag[]
+  tags  PostTag[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt()
 
@@ -78,7 +78,7 @@ model PostLike {
   id_post      Int
   id_user      Int
   user         User @relation(fields: [id_user], references: [id_user])
-  post         Post @relation(fields: [id_post], references: [id_post])
+  post         Post @relation(fields: [id_post], references: [id_post], onDelete: Cascade)
   createdAt DateTime @default(now())
   @@index([id_post, id_user], name: "post_like_unique_idx")
 }
@@ -88,7 +88,7 @@ model CommentLike {
   id_user         Int
   id_comment      Int
   user            User    @relation(fields: [id_user], references: [id_user])
-  comment         Comment @relation(fields: [id_comment], references: [id_comment])
+  comment         Comment @relation(fields: [id_comment], references: [id_comment], onDelete: Cascade)
   createdAt DateTime @default(now())
   @@index([id_comment, id_user], name: "comment_like_unique_idx")
 }
@@ -97,7 +97,7 @@ model Comment {
   id_comment Int           @id @default(autoincrement())
   id_post    Int
   id_user    Int
-  post       Post          @relation(fields: [id_post], references: [id_post])
+  post       Post          @relation(fields: [id_post], references: [id_post], onDelete: Cascade)
   content    String
   user       User          @relation(fields: [id_user], references: [id_user])
   likes      CommentLike[]
@@ -109,8 +109,8 @@ model Comment {
 model PostTag {
   id_post Int
   id_tag  Int
-  post    Post @relation(fields: [id_post], references: [id_post])
-  tag     Tag  @relation(fields: [id_tag], references: [id_tag])
+  post    Post @relation(fields: [id_post], references: [id_post], onDelete: Cascade)
+  tag     Tag  @relation(fields: [id_tag], references: [id_tag], onDelete: Cascade)
 
   @@id([id_post, id_tag])
 }

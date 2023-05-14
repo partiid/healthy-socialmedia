@@ -8,29 +8,30 @@ import * as session from 'express-session';
 import * as passport from 'passport';
 import Redis from 'ioredis';
 
-
-
 async function bootstrap() {
-    const app = await NestFactory.create(AppModule, { cors: false,
-    snapshot: true });
-
+    const app = await NestFactory.create(AppModule, {
+        cors: false,
+        snapshot: true,
+    });
 
     //setup redis session store
     const RedisStore = require('connect-redis')(session);
     const redisClient = new Redis();
 
-    //setup session 
-    app.use(session({
-        store: new RedisStore({ client: redisClient, logErrors: true }),
-        secret: process.env.JWT_SECRET,
-        resave: false,
-        saveUninitialized: false,
-        cookie: {
-            maxAge: 60,
+    //setup session
+    app.use(
+        session({
+            store: new RedisStore({ client: redisClient, logErrors: true }),
+            secret: process.env.JWT_SECRET,
+            resave: false,
+            saveUninitialized: false,
+            cookie: {
+                maxAge: 60,
 
-            secure: false, //set this to false for now, since we are not using https 
-        }
-    }));
+                secure: false, //set this to false for now, since we are not using https
+            },
+        }),
+    );
     app.use(passport.initialize());
     app.use(passport.session());
     // app.use((req, res, next) => {
@@ -41,19 +42,19 @@ async function bootstrap() {
     //     );
     //     next();
     // });
-     //setup api response
+    //setup api response
     //add validation via class validator
     app.useGlobalPipes(new ValidationPipe());
-    
+
     //app.useGlobalFilters(new HttpExceptionFilter());
-    
+
     app.useGlobalInterceptors(new ApiResponseInterceptor());
     //app.useGlobalInterceptors(new AuthenticatedRequestInterceptor());
     //setup swagger
     const config = new DocumentBuilder()
-        .setTitle('Template REST API')
-        .setDescription('Template REST API')
-        .setVersion('1.0')
+        .setTitle('Reactively API')
+        .setDescription('Healthy social media api')
+        .setVersion('1.5')
         .addBearerAuth()
         .build();
     const document = SwaggerModule.createDocument(app, config);

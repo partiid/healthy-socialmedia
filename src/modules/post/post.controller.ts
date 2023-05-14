@@ -10,6 +10,7 @@ import {
     HttpCode,
     NotFoundException,
     ParseIntPipe,
+    Delete,
 } from '@nestjs/common';
 import { PostService } from './post.service';
 import { PostModel } from './post.model';
@@ -134,6 +135,27 @@ export class PostController {
         return await this.postService.findOne({
             id_post,
         });
+    }
+
+    @Delete(':id_post')
+    @UseGuards(AllowedActionGuard)
+    @UseGuards(JwtAuthGuard)
+    @ApiBearerAuth()
+    async deletePost(
+        @Param('id_post', ParseIntPipe) id_post: number,
+        @Req() req: AuthenticatedRequest,
+    ): Promise<PostObject> {
+        let post = await this.postService.findOne({ id_post });
+        if (!post) throw new NotFoundException('Post not found');
+        if (post.id_user != req.user.id_user)
+            throw new NotFoundException(
+                'You are not allowed to delete this post',
+            );
+        try {
+            return await this.postService.delete({ id_post });
+        } catch (err: any) {
+            throw new NotFoundException(err);
+        }
     }
 
     @Post('/like')
