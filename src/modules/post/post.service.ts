@@ -181,7 +181,7 @@ export class PostService implements ServiceInterface<Post> {
 
     async create(data: PostModel): Promise<Post> {
         //todo: upload image to post
-        const { content, id_user, tags } = data;
+        const { content, title, id_user, tags } = data;
 
         const userExists = await this.UserService.findOne({
             id_user,
@@ -192,6 +192,7 @@ export class PostService implements ServiceInterface<Post> {
 
         postCreated = await this.PrismaService.post.create({
             data: {
+                title: title,
                 content: content,
                 user: {
                     connect: {
