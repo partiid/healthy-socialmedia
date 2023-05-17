@@ -3,6 +3,8 @@
 
 /dist
 /node_modules
+/mongodb
+/.docker
 
 # Logs
 logs

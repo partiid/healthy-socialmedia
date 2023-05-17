@@ -1,0 +1,59 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output = "../../../node_modules/@prisma/notifications-client"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("MONGO_URL")
+}
+
+model User {
+  id_user  String    @id @map("_id")  @db.ObjectId @default(auto())
+  notificationsSent Notification[] @relation("notificationsSent")
+  notificationsReceived Notification[] @relation("notificationsReceived")
+  userActions UserAction[]
+}
+
+model Notification {
+  id_notification String    @id @default(auto())  @map("_id") @db.ObjectId  
+  id_action         String
+  id_user_sender String
+  id_user_receiver String 
+  text           String
+  action         Action @relation(fields: [id_action], references: [id_action])
+  userSender            User    @relation(fields: [id_user_sender], references: [id_user], name: "notificationsSent")
+  userReceiver            User    @relation(fields: [id_user_receiver], references: [id_user], name: "notificationsReceived")
+  createdAt DateTime @default(now())
+  @@index([id_user_sender, id_user_receiver], name: "notification_unique_idx")
+}
+
+model Action {
+  id_action String    @id @default(auto()) @map("_id") @db.ObjectId  
+  id_resource String 
+  name      String
+  users     UserAction[]
+  resources Resource @relation(fields: [id_resource], references: [id_resource])
+  notificationsRelated Notification[]
+  
+}
+model Resource {
+  id_resource String   @id @default(auto())  @map("_id") @db.ObjectId  
+  name      String
+  actions  Action[]
+  
+  
+}
+
+model UserAction {
+  id_user_action String @id @default(auto()) @map("_id") @db.ObjectId 
+  id_user        String
+  id_action      String
+  user           User   @relation(fields: [id_user], references: [id_user])
+  action         Action @relation(fields: [id_action], references: [id_action])
+  createdAt DateTime @default(now())
+  @@index([id_user, id_action], name: "user_action_unique_idx")
+}

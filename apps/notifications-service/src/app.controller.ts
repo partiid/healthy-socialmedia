@@ -3,13 +3,15 @@ import { AppService } from './app.service';
 import { EventPattern } from '@nestjs/microservices';
 import { PostLikeEvent } from 'apps/common';
 import { UserService } from 'apps/reactively-api/src/modules/user/user.service';
+import { HandlerService } from './handler/handler.service';
 
 @Controller()
 export class AppController {
     private readonly Logger = new Logger(AppController.name);
 
     constructor(private readonly appService: AppService,
-        private readonly UserService: UserService
+        private readonly UserService: UserService,
+        private readonly HandlerService: HandlerService
         ) {}
 
         @EventPattern('post.like')
@@ -23,9 +25,9 @@ export class AppController {
                 return;
             }
     
-            //send notification to the post owner
-            this.Logger.log(`Sending notification to ${postOwner.username} for post ${data.id_post}`);
-        
+            
+            
+            await this.HandlerService.handlePostLike(data);
             
             
         }

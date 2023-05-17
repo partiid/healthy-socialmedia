@@ -1,0 +1,111 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id_user  Int           @id @default(autoincrement())
+  username String
+  password String
+  email    String
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt()
+  posts    Post[]
+  tags     Tag[]
+  likes    PostLike[]
+  comments CommentLike[]
+  details  UserDetails?
+  UserTag  UserTag[]
+}
+
+model UserDetails {
+  id_user_details Int     @id @default(autoincrement())
+  bio             String?
+  id_user         Int     @unique
+  user            User    @relation(fields: [id_user], references: [id_user])
+  id_image        Int?    @unique
+  image           Image?  @relation(fields: [id_image], references: [id_image])
+}
+
+model UserTag {
+  id_user Int
+  id_tag  Int
+  user    User @relation(fields: [id_user], references: [id_user])
+  tag     Tag  @relation(fields: [id_tag], references: [id_tag])
+
+  @@id([id_user, id_tag])
+}
+
+model Image {
+  id_image Int           @id @default(autoincrement())
+  path     String
+  posts    Post[]
+  users    UserDetails[]
+}
+
+model Post {
+  id_post  Int        @id @default(autoincrement())
+  content  String
+  id_user  Int
+  user     User       @relation(fields: [id_user], references: [id_user])
+  id_image Int?
+  image    Image?     @relation(fields: [id_image], references: [id_image])
+  comments Comment[]
+  likes    PostLike[]
+  PostTag  PostTag[]
+
+  @@index([id_user], name: "post_author_idx")
+}
+
+model PostLike {
+  id_post_like Int  @id @default(autoincrement())
+  id_post      Int
+  id_user      Int
+  user         User @relation(fields: [id_user], references: [id_user])
+  post         Post @relation(fields: [id_post], references: [id_post])
+
+  @@index([id_post, id_user], name: "post_like_unique_idx")
+}
+
+model CommentLike {
+  id_comment_like Int     @id @default(autoincrement())
+  id_user         Int
+  id_comment      Int
+  user            User    @relation(fields: [id_user], references: [id_user])
+  comment         Comment @relation(fields: [id_comment], references: [id_comment])
+
+  @@index([id_comment, id_user], name: "comment_like_unique_idx")
+}
+
+model Comment {
+  id_comment Int           @id @default(autoincrement())
+  id_post    Int
+  post       Post          @relation(fields: [id_post], references: [id_post])
+  content    String
+  likes      CommentLike[]
+}
+
+model PostTag {
+  id_post Int
+  id_tag  Int
+  post    Post @relation(fields: [id_post], references: [id_post])
+  tag     Tag  @relation(fields: [id_tag], references: [id_tag])
+
+  @@id([id_post, id_tag])
+}
+
+model Tag {
+  id_tag      Int       @id @default(autoincrement())
+  name        String
+  users       UserTag[]
+  posts       PostTag[]
+  User        User?     @relation(fields: [userId_user], references: [id_user])
+  userId_user Int?
+}
