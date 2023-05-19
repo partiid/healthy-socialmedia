@@ -44,6 +44,39 @@ export class NotificationService {
 
     }
 
+    async findOne(id_notification: string): Promise<Notification> {
+        try {
+            return await this.PrismaService.notification.findUnique({
+                where: {
+
+                    id_notification: id_notification,
+                    
+                },
+                include: {
+                    userSender: {
+                        select: {
+                            api_id_user: true,
+                        }
+                    },
+                    userReceiver: {
+                        select: {
+                            api_id_user: true,
+                        }
+                    },
+                    action: {
+                        select: {
+                            name: true,
+                        }
+                    },
+                   
+                },
+            });
+        } catch(err: any) {
+            throw new Error(err);
+        }
+        
+
+    }
     
 
 

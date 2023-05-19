@@ -10,9 +10,14 @@ export class NotificationController {
     private readonly SseService: SseService) {}
 
   @OnEvent('notification.created', { async: true })
-  async handlePostLikeNotification(data: any) {
-    console.log(data);
-    return this.SseService.addEvent(data);
+  async handleNotificationCreated(data: any) {
+    //get the notification formatted as output 
+    const notification = await this.notificationService.findOne(data.id_notification);
+    
+
+
+
+    return this.SseService.addEvent(notification);
    
   }
 
