@@ -9,12 +9,15 @@ import { HandlerService } from './handler/handler.service';
 import { NotificationModule } from './modules/notification/notification.module';
 import { PrismaService } from './prisma.service';
 import { ActionService } from './action/action.service';
-
+import { ConnectorService } from './connector/connector.service';
+import {EventEmitterModule} from '@nestjs/event-emitter';
+import { SseService } from './sse/sse.service';
 
 
 @Module({
-    imports: [PostModule, AuthModule, UserModule, NotificationModule],
+    imports: [PostModule, AuthModule, UserModule, NotificationModule,
+    EventEmitterModule.forRoot({})],
     controllers: [AppController],
-    providers: [AppService, HandlerService, PrismaService, ActionService],
+    providers: [AppService, HandlerService, PrismaService, ActionService, ConnectorService, SseService],
 })
 export class AppModule {}

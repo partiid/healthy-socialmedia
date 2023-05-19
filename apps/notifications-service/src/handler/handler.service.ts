@@ -4,6 +4,12 @@ import { UserService } from 'apps/reactively-api/src/modules/user/user.service';
 import { PrismaService } from '../prisma.service';
 import { ActionService } from '../action/action.service';
 import { PostService } from 'apps/reactively-api/src/modules/post/post.service';
+import mongoid from 'mongoid-js'; 
+import { User } from '@prisma/notifications-client';
+import { ConnectorService } from '../connector/connector.service';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { NotificationObject } from '../modules/notification/types/notification.type';
+
 @Injectable()
 export class HandlerService {
 
@@ -12,7 +18,9 @@ export class HandlerService {
     constructor(private readonly UserService: UserService,
         private readonly PrismaService: PrismaService,
         private readonly ActionService: ActionService,
-        private readonly PostService: PostService){}    /**
+        private readonly PostService: PostService,
+        private readonly ConnectorService: ConnectorService,
+        private EventEmitter: EventEmitter2){}    /**
      * @description Handle post like 
      */
     async handlePostLike(data: PostLikeEvent) {
@@ -36,29 +44,25 @@ export class HandlerService {
             this.Logger.log(`Sending notification to ${postOwner.username} for post ${data.id_post}`);
 
             const id_action: string = await this.ActionService.getActionId('post.like');
+            
+
+
+            let notificationCreated  = {} as any; 
+
             try {
                 this.Logger.log(`Creating notification for ${postOwner.username} for post ${data.id_post}`);
                 
-                await this.PrismaService.notification.create({
+                notificationCreated = await this.PrismaService.notification.create({
                     data: {
                         userSender: {
-                            connectOrCreate: {
-                                where: {
-                                    id_user: data.id_user.toString()
-                                },
-                                create: {
-                                    id_user: data.id_user.toString()
-                                }
+                            connect: {
+                                    id_user: await this.ConnectorService.getOrCreateUser(data.id_user).then((user: User) => { return user.id_user })
+                                
                             }
                         },
                         userReceiver: {
-                            connectOrCreate: {
-                                where: {
-                                    id_user: postOwner.id_user.toString()
-                                },
-                                create: {
-                                    id_user: postOwner.id_user.toString()
-                                }
+                            connect: {
+                                id_user: await this.ConnectorService.getOrCreateUser(postOwner.id_user).then((user: User) => { return user.id_user })
                             }
                         },
                         text: `${postLikeUser.username} liked your post`,
@@ -72,11 +76,23 @@ export class HandlerService {
             }catch(err: any) {
                 this.Logger.error(err);
             }
-            this.Logger.log(`Notification sent to ${postOwner.username} for post ${data.id_post}, Action: post.like`);
+            if(notificationCreated){
+                this.Logger.log(`Notification sent to ${postOwner.username} for post ${data.id_post}, Action: post.like`);
+                //emit event to pass to the notification service
+                
+                this.EventEmitter.emit('notification.created', notificationCreated);
+            }
 
 
             
     }
+
+   
+    // async parseIdUser(id_user: number): Promise<number> {
+    //     return  await this.getOrCreateUser(id_user).then((user: User) => { return user.id_user }); 
+
+    // }
+
 
 
 

@@ -12,6 +12,7 @@ export class ActionService {
                 name
             }
         });
+        console.log("action: ", action);
         return action.id_action; 
 
 
