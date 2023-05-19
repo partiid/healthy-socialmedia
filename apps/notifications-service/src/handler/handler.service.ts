@@ -9,6 +9,9 @@ import { User } from '@prisma/notifications-client';
 import { ConnectorService } from '../connector/connector.service';
 import { EventEmitter2 } from '@nestjs/event-emitter';
 import { NotificationObject } from '../modules/notification/types/notification.type';
+import { PostCommentEvent } from 'apps/common/events/post/postComment.event';
+import { NotificationModel } from '../modules/notification/notification.model';
+import { NotificationService } from '../modules/notification/notification.service';
 
 @Injectable()
 export class HandlerService {
@@ -20,7 +23,8 @@ export class HandlerService {
         private readonly ActionService: ActionService,
         private readonly PostService: PostService,
         private readonly ConnectorService: ConnectorService,
-        private EventEmitter: EventEmitter2){}    /**
+        private EventEmitter: EventEmitter2,
+        private NotificationService: NotificationService){}    /**
      * @description Handle post like 
      */
     async handlePostLike(data: PostLikeEvent) {
@@ -87,6 +91,44 @@ export class HandlerService {
             
     }
 
+
+    async handlePostComment(data: PostCommentEvent) {
+        //for post comment we want to send notifications to the post owner 
+        const post = await this.PostService.findOne({id_post: data.id_post});
+        if(!post) {
+            this.Logger.error(`Post owner not found for post ${data.id_post}`);
+            return;
+        }
+        const postOwner = await this.UserService.findOne({id_user: post.id_user});
+
+        /** User who commented the post  */
+        const postCommentUser = await this.UserService.findOne({id_user: data.id_user});
+        if(!postCommentUser) {
+            this.Logger.error(`Post comment user not found for post ${data.id_post}`);
+            return;
+        }
+
+        //send notification to the post owner
+        this.Logger.log(`Sending notification to ${postOwner.username} for post ${data.id_post}`);
+
+        const id_action: string = await this.ActionService.getActionId('post.comment');
+
+        let notificationCreated  = {} as any;
+
+        try {
+
+            this.Logger.log(`Creating notification for ${postOwner.username} for post ${data.id_post}`);
+            notificationCreated = await this.NotificationService.create(new NotificationModel(postCommentUser.id_user, postOwner.id_user, id_action, `${postCommentUser.username} commented your post`))
+        } catch (err: any) {
+                this.Logger.error(err);
+        }
+
+        if(notificationCreated) {
+            this.EventEmitter.emit('notification.created', notificationCreated)
+            this.Logger.log(`Created notification for ${postOwner.username} for post comment ${data.id_post}`); 
+        }
+    }
+    
    
     // async parseIdUser(id_user: number): Promise<number> {
     //     return  await this.getOrCreateUser(id_user).then((user: User) => { return user.id_user }); 

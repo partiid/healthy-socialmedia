@@ -4,6 +4,7 @@ import { EventPattern } from '@nestjs/microservices';
 import { PostLikeEvent } from 'apps/common';
 import { UserService } from 'apps/reactively-api/src/modules/user/user.service';
 import { HandlerService } from './handler/handler.service';
+import { PostCommentEvent } from 'apps/common/events/post/postComment.event';
 
 @Controller()
 export class AppController {
@@ -31,6 +32,14 @@ export class AppController {
             
             
         }
-
+        
+        @EventPattern('post.comment')
+        async handlePostComment(data: PostCommentEvent) {
+            //for post comment we want to send notifications to the post owner 
+            
+            await this.HandlerService.handlePostComment(data);
+            
+            
+        }
    
 }

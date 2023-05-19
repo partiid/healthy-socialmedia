@@ -9,6 +9,7 @@ import {
     Patch,
     ParseIntPipe,
     BadRequestException,
+    Inject
 } from '@nestjs/common';
 import { PostCommentService } from './postComment.service';
 import { PostCommentModel } from './postComment.model';
@@ -31,6 +32,8 @@ import {
     PostCommentLikeStatus,
 } from './types/postCommentLike.types';
 import { PostCommentLikeService } from './postCommentLike.service';
+import { ClientProxy } from '@nestjs/microservices';
+import { PostCommentEvent } from 'apps/common/events/post/postComment.event';
 
 @ApiTags('comment')
 @Controller('comment')
@@ -41,6 +44,7 @@ export class PostCommentController {
     constructor(
         private PostCommentService: PostCommentService,
         private PostCommentLikeService: PostCommentLikeService,
+        @Inject('NOTIFICATIONS') private NotificationsClient: ClientProxy,
     ) {}
 
     @Post()
@@ -64,6 +68,12 @@ export class PostCommentController {
             });
         } catch (err: any) {
             throw new NotFoundException(err);
+        }
+
+        if(response) {
+            let { id_post, id_user } = postComment;
+            let { id_comment } = response;
+             this.NotificationsClient.emit('post.comment', new PostCommentEvent(id_user, id_post, id_comment));
         }
         return response;
     }
